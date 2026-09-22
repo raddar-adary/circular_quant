@@ -55,7 +55,71 @@
   .toggle button { background: var(--panel2); border: none; color: var(--muted); padding: 8px 14px; cursor: pointer; font-size: 0.95rem; font-family: inherit; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
   .toggle button.active { background: var(--accent); color: #fff; }
   .toggle button svg { display: block; }
-  input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 8px; }
+  input[type="range"] {
+  width: 100%;
+  margin-top: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 24px;
+}
+
+/* Дорожка (полоса) — WebKit (Chrome, Safari, Edge) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+}
+
+/* Ползунок — WebKit */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  margin-top: -9px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+/* Дорожка — Firefox */
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+}
+
+/* Ползунок — Firefox */
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
   .slider-hint { font-size: 0.75rem; color: var(--muted); margin-top: 4px; display: flex; justify-content: space-between; }
   .k-display { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
   .k-display .k-val { font-family: "SF Mono", Consolas, monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); min-width: 40px; }
@@ -130,6 +194,18 @@
     .btn-row { flex-direction: column; }
     .vis-grid { grid-template-columns: 1fr; }
     .history-item { flex-direction: column; align-items: flex-start; }
+      input[type="range"] {
+    height: 32px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    width: 26px;
+    height: 26px;
+    margin-top: -11px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+  }
   }
 </style>
 </head>
