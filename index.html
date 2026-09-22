@@ -680,16 +680,16 @@
     <h2><span class="h2-caps" data-i18n="precision">Точность</span> (<span data-i18n="digitsOfPi">знаков числа Pi</span>)</h2>
 
     <div class="k-display">
-      <span class="k-val" id="kValue">8</span>
-      <span class="k-label" id="kLabel">знаков числа Pi · Машиностр.</span>
-    </div>
+  <span class="k-val" id="kValue">8</span>
+  <span class="k-label" id="kLabel" data-i18n="digitsOfPi">знаков числа Pi</span>
+</div>
 
     <input type="range" id="kSlider" min="3" max="37" value="8" step="1">
 
     <div class="slider-hint">
-      <span>3 знака (3.14)</span>
-      <span>37 знаков (предел астрономии)</span>
-    </div>
+  <span data-i18n="sliderMin">3 знака (3.14)</span>
+  <span data-i18n="sliderMax">37 знаков (предел астрономии)</span>
+</div>
 
     <div class="level-zones" id="levelZones"></div>
 
@@ -727,7 +727,7 @@
   <span class="value big-value" id="pixOut">—</span>
 </div>
 <div class="result-row">
-  <span class="label" id="measureLabel" data-i18n="measure">Мера</span>
+  <span class="label" id="measureLabel">Мера</span>
   <span class="value big-value" id="areaOut">—</span>
 </div>
     <div class="result-row">
@@ -757,7 +757,7 @@
   <!-- Две схемы: деление и равенство площадей -->
   <div class="vis-grid">
     <div class="vis-cell">
-      <div class="vis-title">Первый шаг: деление круга</div>
+      <div class="vis-title" data-i18n="step1">Первый шаг: деление круга</div>
       <svg viewBox="0 0 220 220" class="vis-svg">
         <circle cx="110" cy="110" r="90" fill="none" stroke="currentColor" stroke-width="1.5"/>
         <circle cx="65" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1.5"/>
@@ -767,14 +767,13 @@
         <circle cx="200" cy="110" r="2.5" fill="currentColor"/>
         <line x1="20" y1="110" x2="200" y2="110" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>
       </svg>
-      <div class="vis-desc">
-        Круг радиуса <b>1</b> делится на два круга радиуса <b>1/2</b>.<br>
-        Они касаются друг друга в центре и большого круга — в концах диаметра.
-      </div>
+      <div class="vis-desc" data-i18n="visDesc1">
+  Круг радиуса 1 делится на два круга радиуса 1/2.
+</div>
     </div>
 
     <div class="vis-cell">
-      <div class="vis-title">Равенство площадей</div>
+      <div class="vis-title" data-i18n="equality">Равенство площадей</div>
       <svg viewBox="0 0 220 220" class="vis-svg">
         <defs>
           <clipPath id="bigCircleClip">
@@ -790,16 +789,14 @@
         <circle cx="65" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1"/>
         <circle cx="155" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1"/>
       </svg>
-      <div class="vis-desc">
-        Два малых круга (залиты синим) вместе занимают <b>ровно половину</b> площади большого.<br>
-        Два остатка (залиты зелёным) — тоже <b>ровно половину</b>.<br>
-        Значит: площадь большого = <b>4</b> площади малого круга.
-      </div>
+      <div class="vis-desc" data-i18n="visDesc2">
+  Два малых круга занимают ровно половину площади большого.
+</div>
     </div>
   </div>
 
   <!-- Развитие рекурсии: вложенные круги -->
-  <div class="vis-nested-title">Развитие рекурсии (вложенные круги)</div>
+  <div class="vis-nested-title" data-i18n="recursion">Развитие рекурсии</div>
   <div class="vis-nested">
     <svg viewBox="0 0 480 480" class="vis-nested-svg">
       <!-- УРОВЕНЬ 0: большой круг R = 200 -->
@@ -857,18 +854,16 @@
     <div class="collapsible-body" id="historyBody">
       <div id="historyList"></div>
       <div class="btn-row">
-        <button class="btn" id="clearHistoryBtn">Очистить историю</button>
+        <button class="btn" id="clearHistoryBtn" data-i18n="clearHistory" >Очистить историю</button>
       </div>
     </div>
   </div>
 
   <!-- СПРАВКА -->
   <div class="help">
-    <h2><span class="h2-caps" data-i18n="help">Справка</span></h2>
-    <p><strong>Что такое n?</strong> Это число шагов дискретизации. При каждом шаге пиксель уменьшается вдвое. Приложение подбирает <strong>минимальное n</strong>, при котором пиксель становится мельче погрешности Pi — так, чтобы дискретизация была точной, а погрешность определялась только усечением Pi.</p>
-    <p><strong>Связь с результатом:</strong> радиус в пикселях = <code>2^n</code>. Площадь круга = <code>4^n</code>, площадь сферы = <code>4^(n+1)</code>.</p>
-    <p><strong>Почему это точно?</strong> Все промежуточные величины — целые числа. Pi входит только в коэффициент пересчёта к стандартным единицам, и его точность задаётся слайдером.</p>
-  </div>
+  <h2><span class="h2-caps" data-i18n="help">Справка</span></h2>
+  <div id="helpContent"></div>
+</div>
 
 </div>
 
@@ -893,10 +888,17 @@ const TRANSLATIONS = {
     circle: "Круг",
     sphere: "Сфера",
     ball: "Шар",
+    measureArea: "Площадь",
+    measureLength: "Длина",
+    measureVolume: "Объём",
     precision: "Точность",
     digitsOfPi: "знаков числа Pi",
+    sliderMin: "3 знака (3.14)",
+    sliderMax: "37 знаков (предел астрономии)",
     output: "Вывод",
     outputUnits: "Единицы вывода",
+    verification: "Проверка через полное Pi",
+    exactDiscretization: "Дискретизация точная",
     result: "Результат",
     pixelR0: "Пиксель r0",
     radiusInPixels: "Радиус в пикселях",
@@ -914,6 +916,8 @@ const TRANSLATIONS = {
     step1: "Первый шаг: деление круга",
     equality: "Равенство площадей",
     recursion: "Развитие рекурсии",
+    visDesc1: "Круг радиуса 1 делится на два круга радиуса 1/2.",
+    visDesc2: "Два малых круга занимают ровно половину площади большого.",
     help: "Справка",
     enterPositiveRadius: "Введите положительный радиус.",
     clearAllHistory: "Очистить всю историю?",
@@ -928,6 +932,11 @@ const TRANSLATIONS = {
       micro: "Микро",
       nano: "Нано",
       cosmo: "Космо-астро"
+      helpText: `
+<p><strong>Что такое n?</strong> Это число шагов дискретизации. При каждом шаге пиксель уменьшается вдвое. Приложение подбирает <strong>минимальное n</strong>, при котором пиксель становится мельче погрешности Pi — так, чтобы дискретизация была точной, а погрешность определялась только усечением Pi.</p>
+<p><strong>Связь с результатом:</strong> радиус в пикселях = <code>2^n</code>. Площадь круга = <code>4^n</code>, площадь сферы = <code>4^(n+1)</code>.</p>
+<p><strong>Почему это точно?</strong> Все промежуточные величины — целые числа. Pi входит только в коэффициент пересчёта к стандартным единицам, и его точность задаётся слайдером.</p>
+`,
     }
   },
   en: {
@@ -940,10 +949,17 @@ const TRANSLATIONS = {
     circle: "Circle",
     sphere: "Sphere",
     ball: "Ball",
+    measureArea: "Area",
+    measureLength: "Length",
+    measureVolume: "Volume",
+    sliderMin: "3 digits (3.14)",
+    sliderMax: "37 digits (astronomy limit)",
     precision: "Precision",
     digitsOfPi: "digits of Pi",
     output: "Output",
     outputUnits: "Output units",
+    verification: "Verification via full Pi",
+    exactDiscretization: "Discretization is exact",
     result: "Result",
     pixelR0: "Pixel r0",
     radiusInPixels: "Radius in pixels",
@@ -951,6 +967,8 @@ const TRANSLATIONS = {
     measure: "Measure",
     absError: "Abs. error",
     relError: "Rel. error",
+    visDesc1: "A circle of radius 1 is divided into two circles of radius 1/2.",
+    visDesc2: "The two small circles occupy exactly half the area of the large one.",
     copy: "Copy",
     copied: "Copied ✓",
     saveToHistory: "Save to history",
@@ -975,6 +993,11 @@ const TRANSLATIONS = {
       micro: "Micro",
       nano: "Nano",
       cosmo: "Cosmo-astro"
+      helpText: `
+<p><strong>What is n?</strong> This is the number of discretization steps. At each step the pixel is halved. The app finds the <strong>minimum n</strong> such that the pixel is smaller than the Pi error — so that discretization is exact and the error is determined only by truncating Pi.</p>
+<p><strong>Relation to the result:</strong> radius in pixels = <code>2^n</code>. Circle area = <code>4^n</code>, sphere area = <code>4^(n+1)</code>.</p>
+<p><strong>Why is this exact?</strong> All intermediate values are integers. Pi enters only the conversion factor to standard units, and its precision is set by the slider.</p>
+`,
     }
   }
 };
@@ -990,12 +1013,12 @@ const UNITS = {
 };
 
 const LEVELS = [
-  { min: 3,  max: 3,  name: "Строительный" },
-  { min: 4,  max: 8,  name: "Инженерный" },
-  { min: 9,  max: 11, name: "Прецизионный" },
-  { min: 12, max: 14, name: "Микро" },
-  { min: 15, max: 27, name: "Нано" },
-  { min: 28, max: 37, name: "Космо-астро" },
+  { min: 3,  max: 3,  key: "construction" },
+  { min: 4,  max: 8,  key: "engineering" },
+  { min: 9,  max: 11, key: "precision" },
+  { min: 12, max: 14, key: "micro" },
+  { min: 15, max: 27, key: "nano" },
+  { min: 28, max: 37, key: "cosmo" },
 ];
 // ============================================================
 //  ЯДРО
@@ -1010,8 +1033,8 @@ function piTruncatedByTotal(kTotal) {
 }
 
 function levelFor(kTotal) {
-  for (const L of LEVELS) if (kTotal >= L.min && kTotal <= L.max) return L.name;
-  return LEVELS[0].name;
+  for (const L of LEVELS) if (kTotal >= L.min && kTotal <= L.max) return t('levels.' + L.key);
+  return t('levels.' + LEVELS[0].key);
 }
 // ============================================================
 //  ЛОКАЛИЗАЦИЯ
@@ -1028,6 +1051,12 @@ function applyLanguage(lang) {
   currentLang = lang;
   localStorage.setItem('lang', lang);
   document.documentElement.lang = lang;
+  if (typeof buildLevelZones === 'function') buildLevelZones();
+  if (typeof updateK === 'function') updateK();
+  const helpContent = document.getElementById('helpContent');
+  if (helpContent) {
+  helpContent.innerHTML = t('helpText');
+}
 
   // Обновляем все элементы с data-i18n
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1134,22 +1163,22 @@ function compute() {
   // Выбор объекта
   let pix, measureName, pixelMeasure;
   if (type === 'circle') {
-    pix = pow4Big(n);
-    measureName = 'Площадь';
-    pixelMeasure = Math.PI * r0 * r0;
-  } else if (type === 'sphere') {
-    pix = pow4Big(n) * 4n;
-    measureName = 'Площадь';
-    pixelMeasure = Math.PI * r0 * r0;
-  } else if (type === 'circumference') {
-    pix = pow2Big(n);
-    measureName = 'Длина';
-    pixelMeasure = 2 * Math.PI * r0;
-  } else if (type === 'ball') {
-    pix = pow2Big(n) * pow2Big(n) * pow2Big(n);
-    measureName = 'Объём';
-    pixelMeasure = (4 / 3) * Math.PI * r0 * r0 * r0;
-  } else {
+  pix = pow4Big(n);
+  measureName = t('measureArea');
+  pixelMeasure = Math.PI * r0 * r0;
+} else if (type === 'sphere') {
+  pix = pow4Big(n) * 4n;
+  measureName = t('measureArea');
+  pixelMeasure = Math.PI * r0 * r0;
+} else if (type === 'circumference') {
+  pix = pow2Big(n);
+  measureName = t('measureLength');
+  pixelMeasure = 2 * Math.PI * r0;
+} else if (type === 'ball') {
+  pix = pow2Big(n) * pow2Big(n) * pow2Big(n);
+  measureName = t('measureVolume');
+  pixelMeasure = (4 / 3) * Math.PI * r0 * r0 * r0;
+} else {
     return;
   }
 
@@ -1191,7 +1220,7 @@ function compute() {
   const resultPanel = document.getElementById('resultPanel');
   if (resultPanel) {
     const h2 = resultPanel.querySelector('h2');
-    if (h2) h2.innerHTML = '<span class="h2-caps">Результат</span> — ' + measureName;
+    if (h2) h2.innerHTML = '<span class="h2-caps">' + t('result') + '</span> — ' + measureName;
   }
   const measureLabel = document.getElementById('measureLabel');
   if (measureLabel) measureLabel.textContent = measureName;
@@ -1205,9 +1234,9 @@ function compute() {
 
   const verify = document.getElementById('verifyNote');
   verify.style.display = 'block';
-  verify.innerHTML = '<strong>Проверка через полное Pi:</strong> ' +
-    measureDisplay(S_check) + '. ' +
-    'Дискретизация точная: r0 = R/2^n, n = ' + n + '.';
+  verify.innerHTML = '<strong>' + t('verification') + ':</strong> ' +
+  measureDisplay(S_check) + '. ' +
+  t('exactDiscretization') + ': r0 = R/2^n, n = ' + n + '.';
 
   updateSuggest(M, type);
   updateVisualization(type, n);
@@ -1369,7 +1398,7 @@ function renderHistory() {
   const list = document.getElementById('historyList');
   const arr = loadHistory();
   if (arr.length === 0) {
-    list.innerHTML = '<div style="color:var(--muted); font-size:0.85rem; padding:8px 0;">История пуста.</div>';
+    list.innerHTML = '<div style="color:var(--muted); font-size:0.85rem; padding:8px 0;">' + t('historyEmpty') + '</div>';
     return;
   }
   list.innerHTML = '';
@@ -1431,7 +1460,7 @@ function buildLevelZones() {
     div.dataset.min = L.min;
     div.dataset.max = L.max;
     const range = L.min === L.max ? String(L.min) : `${L.min}–${L.max}`;
-    div.innerHTML = `<span class="zone-name">${L.name}</span><span class="zone-range">${range}</span>`;
+    div.innerHTML = `<span class="zone-name">${t('levels.' + L.key)}</span><span class="zone-range">${range}</span>`;
     div.addEventListener('click', () => {
       const mid = Math.round((L.min + L.max) / 2);
       document.getElementById('kSlider').value = mid;
@@ -1444,7 +1473,7 @@ function buildLevelZones() {
 function updateK() {
   const kTotal = parseInt(document.getElementById('kSlider').value);
   document.getElementById('kValue').textContent = kTotal;
-  document.getElementById('kLabel').textContent = 'знаков числа Pi · ' + levelFor(kTotal);
+  document.getElementById('kLabel').textContent = t('digitsOfPi') + ' · ' + levelFor(kTotal);
 
   document.querySelectorAll('.zone').forEach(z => {
     const min = parseInt(z.dataset.min);
