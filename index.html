@@ -1078,24 +1078,7 @@ function applyLanguage(lang) {
   if (typeof updateK === 'function') updateK();
 }
 
-  // Обновляем все элементы с data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.dataset.i18n;
-    const val = t(key);
-    if (val !== undefined) el.textContent = val;
-  });
-
-  // Подсветка активной кнопки
-  document.querySelectorAll('.lang-opt').forEach(opt => {
-    opt.classList.toggle('active', opt.dataset.lang === lang);
-  });
-
-  // Пересчитываем (чтобы обновить заголовок результата)
-  if (typeof compute === 'function') compute();
-  if (typeof updateK === 'function') updateK();
-}
-
-// Обработчик кликов
+// Обработчик кликов по кнопкам языка
 document.querySelectorAll('.lang-opt').forEach(opt => {
   opt.addEventListener('click', () => applyLanguage(opt.dataset.lang));
 });
