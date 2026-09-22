@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Квантование площади: круг и сфера</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4ea1ff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Квантование">
+<link rel="manifest" href="manifest.json">
 <style>
   :root {
     --bg: #0f1115;
@@ -1349,6 +1355,13 @@ buildLevelZones();
 renderHistory();
 updateK();
 document.getElementById('copyBtn').addEventListener('click', copyResult);
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+  // Регистрация Service Worker (только через http/https)
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 </script>
 
 </body>
