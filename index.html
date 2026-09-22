@@ -1355,10 +1355,8 @@ buildLevelZones();
 renderHistory();
 updateK();
 document.getElementById('copyBtn').addEventListener('click', copyResult);
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-  // Регистрация Service Worker (только через http/https)
+
+// Регистрация Service Worker (только через http/https)
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
