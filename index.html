@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Квантование площади: круг и сфера</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #1a1d24;
+    --panel2: #232730;
+    --accent: #4ea1ff;
+    --accent2: #7bd88f;
+    --text: #e6e8ec;
+    --muted: #8a919e;
+    --danger: #ff6b6b;
+    --border: #2c313c;
+    --level-bg: #2a2f3a;
+    --level-active: #4ea1ff;
+    --btn-bg: #2a2f3a;
+    --btn-hover: #343a47;
+    --vis-pixel: #4ea1ff;
+    --vis-remnant: #7bd88f;
+  }
+  body.light {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --panel2: #f0f2f5;
+    --accent: #2b7fff;
+    --accent2: #1e9e54;
+    --text: #1a1d24;
+    --muted: #6a7280;
+    --danger: #d63c3c;
+    --border: #dfe2e8;
+    --level-bg: #e8ebf0;
+    --level-active: #2b7fff;
+    --btn-bg: #e8ebf0;
+    --btn-hover: #d8dce3;
+    --vis-pixel: #2b7fff;
+    --vis-remnant: #1e9e54;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    line-height: 1.5;
+    transition: background 0.2s, color 0.2s;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .header-text h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 0.9rem; }
+  .theme-btn {
+    background: var(--btn-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text);
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  /* Переключатель темы */
+.theme-switch {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.theme-opt {
+  background: var(--btn-bg);
+  border: none;
+  color: var(--muted);
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.theme-opt:hover {
+  background: var(--btn-hover);
+  color: var(--text);
+}
+
+.theme-opt.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.theme-opt svg {
+  display: block;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 600px) {
+  .theme-opt {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px 12px;
+  }
+  .theme-opt svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+  .panel h2 {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .panel h2 .h2-caps { text-transform: uppercase; }
+  .row { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .row label { min-width: 130px; color: var(--muted); font-size: 0.9rem; }
+  input[type="number"], select {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    flex: 1;
+    min-width: 100px;
+  }
+  input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .toggle { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .toggle button {
+    background: var(--panel2);
+    border: none;
+    color: var(--muted);
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toggle button.active { background: var(--accent); color: #fff; }
+  .toggle button svg { display: block; }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    margin-top: 8px;
+  }
+  .slider-hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .k-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .k-display .k-val {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 40px;
+  }
+  .k-display .k-label { color: var(--muted); font-size: 0.9rem; }
+  .level-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 10px;
+}
+  .zone {
+    background: var(--level-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .zone:hover { background: var(--btn-hover); border-color: var(--accent); }
+  .zone.active { background: var(--level-active); border-color: var(--level-active); color: #fff; }
+  .zone .zone-name { font-size: 0.72rem; font-weight: 600; display: block; line-height: 1.2; }
+  .zone .zone-range {
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: block;
+    margin-top: 3px;
+    font-family: "SF Mono", Consolas, monospace;
+  }
+  .zone.active .zone-range { color: rgba(255,255,255,0.85); }
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    gap: 12px;
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .label { color: var(--muted); flex-shrink: 0; }
+  .result-row .value { font-family: "SF Mono", Consolas, monospace; text-align: right; word-break: break-all; }
+  .big-value { font-size: 1.05rem; color: var(--accent2); }
+  .note {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--panel2);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .note strong { color: var(--text); }
+  .error { color: var(--danger); font-size: 0.9rem; margin-top: 8px; }
+  .pi-preview {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 6px;
+    word-break: break-all;
+  }
+  .help {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .help h2 {
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 14px;
+    font-weight: 600;
+  }
+  .help h2 .h2-caps { text-transform: uppercase; }
+  .help p { margin: 0 0 10px; font-size: 0.9rem; }
+  .help p:last-child { margin-bottom: 0; }
+  .help code {
+    font-family: "SF Mono", Consolas, monospace;
+    background: var(--panel2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  .btn {
+    background: var(--btn-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--btn-hover); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { filter: brightness(1.1); }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .suggest {
+    background: var(--panel2);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .history-item {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-item .h-text { color: var(--muted); flex: 1; }
+  .history-item .h-text strong { color: var(--text); font-weight: 500; }
+  .history-item .h-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .history-item .h-actions button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-family: inherit;
+  }
+  .history-item .h-actions button:hover { color: var(--text); border-color: var(--accent); }
+  .vis-container {
+    display: flex;
+    justify-content: center;
+    padding: 16px 0;
+  }
+  .vis-container svg { max-width: 100%; height: auto; }
+  .vis-caption {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .collapsible-header h2 { margin: 0; }
+  .collapsible-header .chevron {
+    color: var(--muted);
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+  }
+  .collapsible-header.open .chevron { transform: rotate(90deg); }
+  .collapsible-body { margin-top: 14px; display: none; }
+  .collapsible-body.open { display: block; }
+  @media (min-width: 400px) and (max-width: 600px) {
+  .level-zones {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+  /* Визуализация */
+  .vis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 600px) {
+    .vis-grid { grid-template-columns: 1fr; }
+  }
+  .vis-cell {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .vis-title {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .vis-svg {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    margin: 0 auto;
+    color: var(--accent);
+  }
+  .vis-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 10px;
+    text-align: center;
+    line-height: 1.45;
+  }
+  .vis-desc b { color: var(--text); }
+
+  /* Цвета заливки — зависят от темы */
+  /* Вложенная рекурсия */
+  .vis-nested-title {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: center;
+    margin: 20px 0 10px;
+  }
+  .vis-nested {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .vis-nested-svg {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    margin: 0 auto;
+    color: var(--accent);
+  }
+/* ===== Мобильная адаптация ===== */
+@media (max-width: 600px) {
+  body {
+    padding: 12px;
+    font-size: 16px; /* предотвращает автозум при фокусе */
+  }
+
+  .container { max-width: 100%; }
+
+  h1 { font-size: 1.2rem; }
+
+  .subtitle { font-size: 0.85rem; margin-bottom: 16px; }
+
+  .panel {
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+
+  .panel h2 { font-size: 0.8rem; margin-bottom: 10px; }
+
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .row label {
+    min-width: auto;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+  }
+
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px; /* важно: 16px предотвращает зум */
+    min-height: 44px;
+  }
+
+  .toggle {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .toggle button {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    min-height: 48px;
+    justify-content: flex-start;
+  }
+
+  input[type="range"] {
+    height: 32px;
+    margin-top: 12px;
+  }
+
+  /* Зоны уровней: 2 колонки */
+  .level-zones {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .zone {
+    padding: 10px 6px;
+    min-height: 56px;
+  }
+
+  .zone .zone-name { font-size: 0.75rem; }
+  .zone .zone-range { font-size: 0.7rem; }
+
+  /* Результаты: карточки */
+  .result-row {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 0;
+    gap: 4px;
+  }
+
+  .result-row .value {
+    text-align: left;
+    font-size: 1rem;
+    word-break: break-all;
+  }
+
+  .big-value { font-size: 1.1rem; }
+
+  /* Кнопки */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .btn-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Визуализация */
+  .vis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vis-svg { max-width: 100%; }
+
+  /* История */
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .history-item .h-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Справка */
+  .help { padding: 14px; }
+  .help p { font-size: 0.85rem; }
+}
+  
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-text">
+      <h1>Квантование площади</h1>
+      <div class="subtitle">Круг и сфера · целочисленные пиксели · Pi только в коэффициенте</div>
+    </div>
+    <div class="theme-switch" id="themeSwitch">
+  <button class="theme-opt" data-theme="light" title="Светлая тема">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="4"/>
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+  </button>
+  <button class="theme-opt" data-theme="dark" title="Тёмная тема">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</div>
+  </div>
+
+  <!-- ВВОД -->
+  <div class="panel" id="resultPanel">
+  <h2><span class="h2-caps">Результат</span></h2>
+
+    <div class="row">
+      <label>Радиус</label>
+      <input type="number" id="radius" value="50" step="0.01" placeholder="например, 10.55">
+      <select id="unitIn">
+        <option value="1e-3">мм</option>
+        <option value="1e-2">см</option>
+        <option value="1" selected>м</option>
+        <option value="1e-6">мкм</option>
+        <option value="1e-9">нм</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <label>Объект</label>
+      <div class="toggle" id="typeToggle" style="flex-wrap:wrap;">
+  <button data-type="circumference" title="Окружность">
+    <svg width="22" height="22" viewBox="0 0 26 26">
+      <ellipse cx="13" cy="14" rx="9" ry="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <line x1="13" y1="2" x2="13" y2="9" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="13" y1="19" x2="13" y2="25" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+    </svg>
+    Окружность
+  </button>
+  <button data-type="circle" class="active" title="Круг">
+    <svg width="22" height="22" viewBox="0 0 26 26">
+      <ellipse cx="13" cy="15" rx="9" ry="5" fill="currentColor" opacity="0.15"/>
+      <ellipse cx="13" cy="15" rx="9" ry="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <line x1="13" y1="3" x2="13" y2="10" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="13" y1="20" x2="13" y2="24" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+    </svg>
+    Круг
+  </button>
+  <button data-type="sphere" title="Сфера">
+    <svg width="22" height="22" viewBox="0 0 26 26">
+      <circle cx="13" cy="14" r="9" fill="currentColor" opacity="0.15"/>
+      <circle cx="13" cy="14" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <ellipse cx="13" cy="14" rx="3.5" ry="9" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.6"/>
+      <line x1="13" y1="2" x2="13" y2="5" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="13" y1="23" x2="13" y2="26" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+    </svg>
+    Сфера
+  </button>
+  <button data-type="ball" title="Шар">
+    <svg width="22" height="22" viewBox="0 0 26 26">
+      <circle cx="13" cy="14" r="9" fill="currentColor" opacity="0.25"/>
+      <circle cx="13" cy="14" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <ellipse cx="13" cy="14" rx="9" ry="3" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+      <ellipse cx="13" cy="14" rx="3.5" ry="9" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.6"/>
+      <line x1="13" y1="2" x2="13" y2="5" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+      <line x1="13" y1="23" x2="13" y2="26" stroke="currentColor" stroke-width="1" stroke-dasharray="2,2"/>
+    </svg>
+    Шар
+  </button>
+</div>
+    </div>
+  </div>
+
+  <!-- ТОЧНОСТЬ -->
+  <div class="panel">
+    <h2><span class="h2-caps">Точность</span> (знаков числа Pi)</h2>
+
+    <div class="k-display">
+      <span class="k-val" id="kValue">8</span>
+      <span class="k-label" id="kLabel">знаков числа Pi · Машиностр.</span>
+    </div>
+
+    <input type="range" id="kSlider" min="3" max="37" value="8" step="1">
+
+    <div class="slider-hint">
+      <span>3 знака (3.14)</span>
+      <span>37 знаков (предел астрономии)</span>
+    </div>
+
+    <div class="level-zones" id="levelZones"></div>
+
+    <div class="pi-preview" id="piPreview"></div>
+  </div>
+
+  <!-- ВЫВОД -->
+  <div class="panel">
+    <h2><span class="h2-caps">Вывод</span></h2>
+    <div class="row">
+      <label>Единицы вывода</label>
+      <select id="unitOut">
+  <option value="1e-3">мм</option>
+  <option value="1e-2">см</option>
+  <option value="1" selected>м</option>
+  <option value="1e-6">мкм</option>
+  <option value="1e-9">нм</option>
+</select>
+    </div>
+  </div>
+
+  <!-- РЕЗУЛЬТАТ -->
+  <div class="panel">
+    <h2><span class="h2-caps">Результат</span></h2>
+    <div class="result-row">
+      <span class="label">Пиксель r0</span>
+      <span class="value" id="r0Out">—</span>
+    </div>
+    <div class="result-row">
+      <span class="label">Радиус в пикселях (2^n)</span>
+      <span class="value" id="kPixOut">—</span>
+    </div>
+    <div class="result-row">
+  <span class="label">Число пикселей</span>
+  <span class="value big-value" id="pixOut">—</span>
+</div>
+<div class="result-row">
+  <span class="label" id="measureLabel">Мера</span>
+  <span class="value big-value" id="areaOut">—</span>
+</div>
+    <div class="result-row">
+      <span class="label">Абс. погрешность</span>
+      <span class="value" id="absErrOut">—</span>
+    </div>
+    <div class="result-row">
+      <span class="label">Отн. погрешность</span>
+      <span class="value" id="relErrOut">—</span>
+    </div>
+
+    <div id="suggestBox"></div>
+
+    <div class="btn-row">
+      <button class="btn primary" id="copyBtn">Скопировать</button>
+      <button class="btn" id="saveBtn">Сохранить в историю</button>
+    </div>
+  </div>
+
+  <div class="error" id="errorMsg"></div>
+  <div class="note" id="verifyNote" style="display:none;"></div>
+
+  <!-- ВИЗУАЛИЗАЦИЯ -->
+<div class="panel">
+  <h2><span class="h2-caps">Визуализация</span> (отправная точка рекурсии)</h2>
+
+  <!-- Две схемы: деление и равенство площадей -->
+  <div class="vis-grid">
+    <div class="vis-cell">
+      <div class="vis-title">Первый шаг: деление круга</div>
+      <svg viewBox="0 0 220 220" class="vis-svg">
+        <circle cx="110" cy="110" r="90" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="65" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="155" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <circle cx="110" cy="110" r="2.5" fill="currentColor"/>
+        <circle cx="20" cy="110" r="2.5" fill="currentColor"/>
+        <circle cx="200" cy="110" r="2.5" fill="currentColor"/>
+        <line x1="20" y1="110" x2="200" y2="110" stroke="currentColor" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.5"/>
+      </svg>
+      <div class="vis-desc">
+        Круг радиуса <b>1</b> делится на два круга радиуса <b>1/2</b>.<br>
+        Они касаются друг друга в центре и большого круга — в концах диаметра.
+      </div>
+    </div>
+
+    <div class="vis-cell">
+      <div class="vis-title">Равенство площадей</div>
+      <svg viewBox="0 0 220 220" class="vis-svg">
+        <defs>
+          <clipPath id="bigCircleClip">
+            <circle cx="110" cy="110" r="90"/>
+          </clipPath>
+        </defs>
+        <circle cx="110" cy="110" r="90" fill="var(--vis-remnant)" opacity="0.55"/>
+        <g clip-path="url(#bigCircleClip)">
+          <circle cx="65" cy="110" r="45" fill="var(--vis-pixel)" opacity="0.85"/>
+          <circle cx="155" cy="110" r="45" fill="var(--vis-pixel)" opacity="0.85"/>
+        </g>
+        <circle cx="110" cy="110" r="90" fill="none" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="65" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1"/>
+        <circle cx="155" cy="110" r="45" fill="none" stroke="currentColor" stroke-width="1"/>
+      </svg>
+      <div class="vis-desc">
+        Два малых круга (залиты синим) вместе занимают <b>ровно половину</b> площади большого.<br>
+        Два остатка (залиты зелёным) — тоже <b>ровно половину</b>.<br>
+        Значит: площадь большого = <b>4</b> площади малого круга.
+      </div>
+    </div>
+  </div>
+
+  <!-- Развитие рекурсии: вложенные круги -->
+  <div class="vis-nested-title">Развитие рекурсии (вложенные круги)</div>
+  <div class="vis-nested">
+    <svg viewBox="0 0 480 480" class="vis-nested-svg">
+      <!-- УРОВЕНЬ 0: большой круг R = 200 -->
+      <circle cx="240" cy="240" r="200" fill="none" stroke="currentColor" stroke-width="1.6"/>
+
+      <!-- УРОВЕНЬ 1: два круга R = 100 -->
+      <circle cx="140" cy="240" r="100" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="340" cy="240" r="100" fill="none" stroke="currentColor" stroke-width="1.4"/>
+
+      <!-- УРОВЕНЬ 2: четыре круга R = 50 -->
+      <circle cx="90"  cy="240" r="50" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="190" cy="240" r="50" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="290" cy="240" r="50" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="390" cy="240" r="50" fill="none" stroke="currentColor" stroke-width="1.2"/>
+
+      <!-- УРОВЕНЬ 3: восемь кругов R = 25 -->
+      <circle cx="65"  cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="115" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="165" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="215" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="265" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="315" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="365" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="415" cy="240" r="25" fill="none" stroke="currentColor" stroke-width="1"/>
+
+      <!-- УРОВЕНЬ 4: шестнадцать кругов R = 12.5 -->
+      <circle cx="52.5"  cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="77.5"  cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="102.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="127.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="152.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="177.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="202.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="227.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="252.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="277.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="302.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="327.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="352.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="377.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="402.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="427.5" cy="240" r="12.5" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.75"/>
+    </svg>
+  </div>
+  
+  <div class="vis-caption" id="visCaption"></div>
+</div>
+
+  <!-- ИСТОРИЯ -->
+  <div class="panel">
+    <div class="collapsible-header" id="historyHeader">
+      <h2><span class="h2-caps">История</span></h2>
+      <span class="chevron">▶</span>
+    </div>
+    <div class="collapsible-body" id="historyBody">
+      <div id="historyList"></div>
+      <div class="btn-row">
+        <button class="btn" id="clearHistoryBtn">Очистить историю</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- СПРАВКА -->
+  <div class="help">
+    <h2><span class="h2-caps">Справка</span></h2>
+    <p><strong>Что такое n?</strong> Это число шагов дискретизации. При каждом шаге пиксель уменьшается вдвое. Приложение подбирает <strong>минимальное n</strong>, при котором пиксель становится мельче погрешности Pi — так, чтобы дискретизация была точной, а погрешность определялась только усечением Pi.</p>
+    <p><strong>Связь с результатом:</strong> радиус в пикселях = <code>2^n</code>. Площадь круга = <code>4^n</code>, площадь сферы = <code>4^(n+1)</code>.</p>
+    <p><strong>Почему это точно?</strong> Все промежуточные величины — целые числа. Pi входит только в коэффициент пересчёта к стандартным единицам, и его точность задаётся слайдером.</p>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+//  КОНСТАНТЫ
+// ============================================================
+
+const PI_STR = "3.14159265358979323846264338327950288419716939937510";
+
+const UNITS = {
+  "1e-3": { short: "мм", sq: "мм²", factor: 1e-3 },
+  "1e-2": { short: "см", sq: "см²", factor: 1e-2 },
+  "1":    { short: "м",  sq: "м²",  factor: 1 },
+  "1e-6": { short: "мкм",sq: "мкм²",factor: 1e-6 },
+  "1e-9": { short: "нм", sq: "нм²", factor: 1e-9 },
+};
+
+const LEVELS = [
+  { min: 3,  max: 3,  name: "Строительный" },
+  { min: 4,  max: 8,  name: "Инженерный" },
+  { min: 9,  max: 11, name: "Прецизионный" },
+  { min: 12, max: 14, name: "Микро" },
+  { min: 15, max: 27, name: "Нано" },
+  { min: 28, max: 37, name: "Космо-астро" },
+];
+// ============================================================
+//  ЯДРО
+// ============================================================
+
+function piTruncatedByTotal(kTotal) {
+  const decimals = kTotal - 1;
+  if (decimals <= 0) return "3";
+  const s = PI_STR;
+  const dot = s.indexOf('.');
+  return s.slice(0, dot + 1 + decimals);
+}
+
+function levelFor(kTotal) {
+  for (const L of LEVELS) if (kTotal >= L.min && kTotal <= L.max) return L.name;
+  return LEVELS[0].name;
+}
+
+function relError(kTotal) {
+  const decimals = kTotal - 1;
+  const pi = parseFloat(piTruncatedByTotal(kTotal));
+  return 0.5 * Math.pow(10, -decimals) / pi;
+}
+
+function chooseN(kTotal) {
+  const eps = relError(kTotal);
+  return Math.ceil(Math.log2(1 / eps));
+}
+
+function pow2Big(n) { return 1n << BigInt(n); }
+function pow4Big(n) { return 1n << BigInt(2 * n); }
+
+function formatBig(b) {
+  return b.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+function fmtDecimal(x, decimals = 3) {
+  if (!isFinite(x)) return "—";
+  if (x === 0) return "0";
+  const abs = Math.abs(x);
+  if (abs < 1e-6) {
+    return x.toExponential(3).replace("e", "·10^").replace("+", "");
+  }
+  if (abs >= 1e15) {
+    return x.toExponential(6).replace("e", "·10^").replace("+", "");
+  }
+  const fixed = x.toFixed(decimals);
+  const [intPart, fracPart] = fixed.split(".");
+  const intFormatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return fracPart ? intFormatted + "," + fracPart : intFormatted;
+}
+
+function fmtArea(S_m2, unitKey) {
+  const u = UNITS[unitKey];
+  const S = S_m2 / (u.factor * u.factor);
+  return fmtDecimal(S, 3) + " " + u.sq;
+}
+
+function fmtLength(L_m, unitKey) {
+  const u = UNITS[unitKey];
+  const L = L_m / u.factor;
+  return fmtDecimal(L, 3) + " " + u.short;
+}
+
+// ============================================================
+//  ГЛОБАЛЬНОЕ СОСТОЯНИЕ
+// ============================================================
+
+let lastResult = null;
+
+// ============================================================
+//  ОСНОВНОЙ РАСЧЁТ
+// ============================================================
+
+function compute() {
+  const R_input = parseFloat(document.getElementById('radius').value.replace(',', '.'));
+  const unitInKey = document.getElementById('unitIn').value;
+  const unitOutKey = document.getElementById('unitOut').value;
+  const typeBtn = document.querySelector('#typeToggle button.active');
+  if (!typeBtn) return;
+  const type = typeBtn.dataset.type;
+  const kTotal = parseInt(document.getElementById('kSlider').value);
+
+  const errEl = document.getElementById('errorMsg');
+  errEl.textContent = '';
+
+  if (!isFinite(R_input) || R_input <= 0) {
+    errEl.textContent = 'Введите положительный радиус.';
+    return;
+  }
+
+  const uIn = UNITS[unitInKey];
+  const R = R_input * uIn.factor;
+
+  const n = chooseN(kTotal);
+  const r0 = R / Math.pow(2, n);
+  const kPix = pow2Big(n);
+
+  // Выбор объекта
+  let pix, measureName, pixelMeasure;
+  if (type === 'circle') {
+    pix = pow4Big(n);
+    measureName = 'Площадь';
+    pixelMeasure = Math.PI * r0 * r0;
+  } else if (type === 'sphere') {
+    pix = pow4Big(n) * 4n;
+    measureName = 'Площадь';
+    pixelMeasure = Math.PI * r0 * r0;
+  } else if (type === 'circumference') {
+    pix = pow2Big(n);
+    measureName = 'Длина';
+    pixelMeasure = 2 * Math.PI * r0;
+  } else if (type === 'ball') {
+    pix = pow2Big(n) * pow2Big(n) * pow2Big(n);
+    measureName = 'Объём';
+    pixelMeasure = (4 / 3) * Math.PI * r0 * r0 * r0;
+  } else {
+    return;
+  }
+
+  const pixNum = Number(pix);
+  const M = pixNum * pixelMeasure;
+
+  const relErr = relError(kTotal);
+  const absErr = M * relErr;
+
+  lastResult = {
+    type, R_input, unitInKey, unitOutKey, kTotal, n,
+    r0, kPix, pix, M, relErr, absErr, measureName,
+    piStr: piTruncatedByTotal(kTotal)
+  };
+
+  // Функция форматирования меры с учётом типа
+  function measureDisplay(value_m) {
+    const u = UNITS[unitOutKey];
+    if (type === 'circumference') {
+      const val = value_m / u.factor;
+      return fmtDecimal(val, 3) + ' ' + u.short;
+    } else if (type === 'ball') {
+      const val = value_m / (u.factor * u.factor * u.factor);
+      return fmtDecimal(val, 3) + ' ' + u.short + '³';
+    } else {
+      const val = value_m / (u.factor * u.factor);
+      return fmtDecimal(val, 3) + ' ' + u.sq;
+    }
+  }
+
+  document.getElementById('r0Out').textContent = fmtLength(r0, unitInKey);
+  document.getElementById('kPixOut').textContent = formatBig(kPix) + '  (n = ' + n + ')';
+  document.getElementById('pixOut').textContent = formatBig(pix);
+  document.getElementById('areaOut').textContent = measureDisplay(M);
+  document.getElementById('absErrOut').textContent = measureDisplay(absErr);
+  document.getElementById('relErrOut').textContent = relErr.toExponential(3).replace("e", "·10^").replace("+", "");
+
+  // Меняем подписи
+  const resultPanel = document.getElementById('resultPanel');
+  if (resultPanel) {
+    const h2 = resultPanel.querySelector('h2');
+    if (h2) h2.innerHTML = '<span class="h2-caps">Результат</span> — ' + measureName;
+  }
+  const measureLabel = document.getElementById('measureLabel');
+  if (measureLabel) measureLabel.textContent = measureName;
+
+  // Проверка
+  let S_check;
+  if (type === 'circle') S_check = Math.PI * R * R;
+  else if (type === 'sphere') S_check = 4 * Math.PI * R * R;
+  else if (type === 'circumference') S_check = 2 * Math.PI * R;
+  else if (type === 'ball') S_check = (4 / 3) * Math.PI * R * R * R;
+
+  const verify = document.getElementById('verifyNote');
+  verify.style.display = 'block';
+  verify.innerHTML = '<strong>Проверка через полное Pi:</strong> ' +
+    measureDisplay(S_check) + '. ' +
+    'Дискретизация точная: r0 = R/2^n, n = ' + n + '.';
+
+  updateSuggest(M, type);
+  updateVisualization(type, n);
+  document.getElementById('kLabel').textContent = 'знаков числа Pi · ' + levelFor(kTotal);
+}
+// ============================================================
+//  АВТОПОДБОР ЕДИНИЦ
+// ============================================================
+
+function updateSuggest(M, type) {
+  const box = document.getElementById('suggestBox');
+  box.innerHTML = '';
+  if (!M || M <= 0) return;
+
+  const unitOutKey = document.getElementById('unitOut').value;
+  const u = UNITS[unitOutKey];
+  let S;
+  if (type === 'circumference') S = M / u.factor;
+  else if (type === 'ball') S = M / (u.factor ** 3);
+  else S = M / (u.factor ** 2);
+
+  if (S >= 0.01 && S <= 1e6) return;
+
+  const candidates = ["1e-9", "1e-6", "1e-3", "1e-2", "1"];
+  let best = null;
+  for (const key of candidates) {
+    const uu = UNITS[key];
+    let val;
+    if (type === 'circumference') val = M / uu.factor;
+    else if (type === 'ball') val = M / (uu.factor ** 3);
+    else val = M / (uu.factor ** 2);
+    if (val >= 0.1 && val <= 1e6) { best = { key, val }; break; }
+  }
+  if (!best || best.key === unitOutKey) return;
+
+  const div = document.createElement('div');
+  div.className = 'suggest';
+  div.innerHTML = '<span>Результат неудобен в текущих единицах. Переключить на <strong>' +
+    UNITS[best.key].short + '</strong>?</span>';
+  const btn = document.createElement('button');
+  btn.className = 'btn primary';
+  btn.textContent = 'Переключить';
+  btn.onclick = () => {
+    document.getElementById('unitOut').value = best.key;
+    compute();
+  };
+  div.appendChild(btn);
+  box.appendChild(div);
+}
+
+// ============================================================
+//  ВИЗУАЛИЗАЦИЯ
+// ============================================================
+
+function updateVisualization(type, n) {
+  const caption = document.getElementById('visCaption');
+  if (!caption) return;
+  const typeName = { circle: 'круг', sphere: 'сфера', circumference: 'окружность', ball: 'шар' }[type];
+  const total = (type === 'circumference') ? (1n << BigInt(n))
+              : (type === 'ball') ? (1n << BigInt(3 * n))
+              : (type === 'sphere') ? (1n << BigInt(2 * n + 2))
+              : (1n << BigInt(2 * n));
+  caption.textContent = 'Для текущего расчёта: ' + typeName + ', n = ' + n +
+    '. Полное число пикселей = ' + formatBig(total) + '.';
+}
+
+// ============================================================
+//  КОПИРОВАНИЕ
+// ============================================================
+
+function buildCopyText() {
+  if (!lastResult) return '';
+  const r = lastResult;
+  const typeName = { circle: 'Круг', sphere: 'Сфера', circumference: 'Окружность', ball: 'Шар' }[r.type];
+  const uIn = UNITS[r.unitInKey];
+  const uOut = UNITS[r.unitOutKey];
+
+  let measureStr;
+  if (r.type === 'circumference') {
+    measureStr = fmtDecimal(r.M / uOut.factor, 3) + ' ' + uOut.short;
+  } else if (r.type === 'ball') {
+    measureStr = fmtDecimal(r.M / (uOut.factor ** 3), 3) + ' ' + uOut.short + '³';
+  } else {
+    measureStr = fmtDecimal(r.M / (uOut.factor ** 2), 3) + ' ' + uOut.sq;
+  }
+
+  const lines = [
+    'Квантование: ' + typeName,
+    'Радиус: ' + r.R_input + ' ' + uIn.short,
+    'Точность: ' + r.kTotal + ' знаков Pi (' + r.piStr + ')',
+    'Пиксель r0: ' + fmtLength(r.r0, r.unitInKey),
+    'Радиус в пикселях: ' + formatBig(r.kPix) + ' (n = ' + r.n + ')',
+    'Число пикселей: ' + formatBig(r.pix),
+    r.measureName + ': ' + measureStr,
+    'Отн. погрешность: ' + r.relErr.toExponential(3).replace("e", "·10^").replace("+", ""),
+  ];
+  return lines.join('\n');
+}
+
+function copyResult() {
+  const text = buildCopyText();
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(() => { btn.textContent = old; }, 1500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('copyBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Скопировано ✓';
+    setTimeout(() => { btn.textContent = old; }, 1500);
+  });
+}// ============================================================
+//  ИСТОРИЯ
+// ============================================================
+
+const HISTORY_KEY = 'pixelAreaHistory';
+
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveHistory(arr) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+}
+
+function addToHistory() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const item = {
+    ts: Date.now(),
+    type: r.type,
+    R_input: r.R_input,
+    unitInKey: r.unitInKey,
+    unitOutKey: r.unitOutKey,
+    kTotal: r.kTotal,
+    areaText: fmtArea(r.S_m2, r.unitOutKey),
+    pixText: formatBig(r.pix),
+  };
+  const arr = loadHistory();
+  arr.unshift(item);
+  if (arr.length > 20) arr.length = 20;
+  saveHistory(arr);
+  renderHistory();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const arr = loadHistory();
+  if (arr.length === 0) {
+    list.innerHTML = '<div style="color:var(--muted); font-size:0.85rem; padding:8px 0;">История пуста.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  arr.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    const typeName = item.type === 'circle' ? 'Круг' : 'Сфера';
+    const uIn = UNITS[item.unitInKey];
+    const date = new Date(item.ts);
+    const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString().slice(0,5);
+    div.innerHTML = `
+      <div class="h-text">
+        <strong>${typeName}</strong>, R = ${item.R_input} ${uIn.short}, ${item.kTotal} зн. Pi · <strong>${item.areaText}</strong>
+        <br><span style="font-size:0.75rem;">${dateStr}</span>
+      </div>
+      <div class="h-actions">
+        <button data-idx="${idx}" data-act="load">↻</button>
+        <button data-idx="${idx}" data-act="del">✕</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const idx = parseInt(e.target.dataset.idx);
+      const act = e.target.dataset.act;
+      const arr = loadHistory();
+      if (act === 'del') {
+        arr.splice(idx, 1);
+        saveHistory(arr);
+        renderHistory();
+      } else if (act === 'load') {
+        const item = arr[idx];
+        document.getElementById('radius').value = item.R_input;
+        document.getElementById('unitIn').value = item.unitInKey;
+        document.getElementById('unitOut').value = item.unitOutKey;
+        document.getElementById('kSlider').value = item.kTotal;
+        document.querySelectorAll('#typeToggle button').forEach(b => {
+          b.classList.toggle('active', b.dataset.type === item.type);
+        });
+        updateK();
+      }
+    });
+  });
+}
+
+// ============================================================
+//  UI
+// ============================================================
+
+function buildLevelZones() {
+  const container = document.getElementById('levelZones');
+  container.innerHTML = '';
+  LEVELS.forEach((L, i) => {
+    const div = document.createElement('div');
+    div.className = 'zone';
+    div.dataset.idx = i;
+    div.dataset.min = L.min;
+    div.dataset.max = L.max;
+    const range = L.min === L.max ? String(L.min) : `${L.min}–${L.max}`;
+    div.innerHTML = `<span class="zone-name">${L.name}</span><span class="zone-range">${range}</span>`;
+    div.addEventListener('click', () => {
+      const mid = Math.round((L.min + L.max) / 2);
+      document.getElementById('kSlider').value = mid;
+      updateK();
+    });
+    container.appendChild(div);
+  });
+}
+
+function updateK() {
+  const kTotal = parseInt(document.getElementById('kSlider').value);
+  document.getElementById('kValue').textContent = kTotal;
+  document.getElementById('kLabel').textContent = 'знаков числа Pi · ' + levelFor(kTotal);
+
+  document.querySelectorAll('.zone').forEach(z => {
+    const min = parseInt(z.dataset.min);
+    const max = parseInt(z.dataset.max);
+    z.classList.toggle('active', kTotal >= min && kTotal <= max);
+  });
+
+  const piStr = piTruncatedByTotal(kTotal);
+  document.getElementById('piPreview').textContent = 'Pi = ' + piStr;
+
+  compute();
+}
+
+// ============================================================
+//  СОБЫТИЯ
+// ============================================================
+
+document.getElementById('kSlider').addEventListener('input', updateK);
+
+document.getElementById('typeToggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  document.querySelectorAll('#typeToggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  compute();
+});
+
+document.getElementById('radius').addEventListener('input', compute);
+
+document.getElementById('unitIn').addEventListener('change', (e) => {
+  document.getElementById('unitOut').value = e.target.value;
+  compute();
+});
+
+document.getElementById('unitOut').addEventListener('change', compute);
+
+document.getElementById('copyBtn').addEventListener('click', copyResult);
+document.getElementById('saveBtn').addEventListener('click', addToHistory);
+document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+  if (confirm('Очистить всю историю?')) {
+    saveHistory([]);
+    renderHistory();
+  }
+});
+
+// Сворачиваемая история
+document.getElementById('historyHeader').addEventListener('click', () => {
+  const h = document.getElementById('historyHeader');
+  const b = document.getElementById('historyBody');
+  h.classList.toggle('open');
+  b.classList.toggle('open');
+});
+
+// Тема
+(function() {
+  const opts = document.querySelectorAll('.theme-opt');
+  const saved = localStorage.getItem('theme') || 'dark';
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.body.classList.add('light');
+    } else {
+      document.body.classList.remove('light');
+    }
+    // Подсвечиваем активную кнопку
+    opts.forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.theme === theme);
+    });
+    localStorage.setItem('theme', theme);
+  }
+
+  // Установить тему при загрузке
+  applyTheme(saved);
+
+  // Обработчик кликов
+  opts.forEach(opt => {
+    opt.addEventListener('click', () => {
+      applyTheme(opt.dataset.theme);
+    });
+  });
+})();
+
+// ============================================================
+//  СТАРТ
+// ============================================================
+
+buildLevelZones();
+renderHistory();
+updateK();
+document.getElementById('copyBtn').addEventListener('click', copyResult);
+</script>
+
+</body>
+</html>
